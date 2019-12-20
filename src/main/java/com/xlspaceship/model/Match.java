@@ -1,8 +1,10 @@
 package com.xlspaceship.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Game {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Match {
 	
 	@JsonProperty("user_id")
 	private String userId;
