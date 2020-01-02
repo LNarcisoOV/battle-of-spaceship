@@ -22,9 +22,9 @@ public class MatchServiceImpl implements MatchService {
 	private Match createMatch(Match matchRequest) {
 		Match match = new Match();
 
-		match.setUserId("player" + matchList.size() + 1);
+		match.setUserId("player" + (matchList.size() + 1));
 		match.setFullName(matchRequest.getFullName());
-		match.setGameId("match-" + matchList.size() + 1);
+		match.setGameId("match-" + (matchList.size() + 1));
 		match.setStarting(matchRequest.getUserId());
 
 		return match;
