@@ -15,8 +15,7 @@ public class UserController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Player> newGame(@PathVariable String id) {
-		Player p = new Player();
-		return new ResponseEntity<>(p, HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 }
