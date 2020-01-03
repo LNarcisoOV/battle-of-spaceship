@@ -3,7 +3,7 @@ package com.xlspaceship.model;
 public class Player {
 	
 	private String userId;
-	private String[][] board = new String[16][16];
+	private String[] board = new String[16];
 	
 	public String getUserId() {
 		return userId;
@@ -13,11 +13,11 @@ public class Player {
 		this.userId = userId;
 	}
 
-	public String[][] getBoard() {
+	public String[] getBoard() {
 		return board;
 	}
 
-	public void setBoard(String[][] board) {
+	public void setBoard(String[] board) {
 		this.board = board;
 	}
 	
