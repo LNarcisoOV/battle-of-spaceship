@@ -34,6 +34,20 @@ public class SpaceshipServiceImpl implements SpaceshipService{
 		return null;
 	}
 	
+	public String[] createAClassRandomly(int randomValue) {
+		switch (randomValue) {
+			case 0:
+				return normalAClass();
+			case 1:
+				return aClassToTheRight();
+			case 2:
+				return aClassToTheLeft();
+			case 3:
+				return aClassUpsideDown();
+		}
+		return null;
+	}
+	
 	private String[] normalWinger() {
 		String[] winger = new String[5];
 		winger[0] = "*.*";
@@ -101,6 +115,40 @@ public class SpaceshipServiceImpl implements SpaceshipService{
 		angle[1] = "..*";
 		angle[2] = "..*";
 		angle[3] = "..*";
+		return angle;
+	}
+	
+	private String[] normalAClass() {
+		String[] angle = new String[4];
+		angle[0] = ".*.";
+		angle[1] = "*.*";
+		angle[2] = "***";
+		angle[3] = "*.*";
+		return angle;
+	}
+
+	private String[] aClassToTheRight() {
+		String[] angle = new String[3];
+		angle[0] = "***.";
+		angle[1] = ".*.*";
+		angle[2] = "***.";
+		return angle;
+	}
+
+	private String[] aClassToTheLeft() {
+		String[] angle = new String[3];
+		angle[0] = ".***";
+		angle[1] = "*.*.";
+		angle[2] = ".***";
+		return angle;
+	}
+
+	private String[] aClassUpsideDown() {
+		String[] angle = new String[4];
+		angle[0] = "*.*";
+		angle[1] = "***";
+		angle[2] = "*.*";
+		angle[3] = ".*.";
 		return angle;
 	}
 
