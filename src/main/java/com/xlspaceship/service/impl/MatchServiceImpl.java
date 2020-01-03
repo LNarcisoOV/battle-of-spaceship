@@ -3,12 +3,12 @@ package com.xlspaceship.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.xlspaceship.model.Match;
 import com.xlspaceship.service.MatchService;
 
-@Component
+@Service
 public class MatchServiceImpl implements MatchService {
 
 	private List<Match> matchList = new ArrayList<Match>();
