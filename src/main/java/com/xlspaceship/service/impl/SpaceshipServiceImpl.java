@@ -50,14 +50,28 @@ public class SpaceshipServiceImpl implements SpaceshipService{
 	
 	public String[] createBClassRandomly(int randomValue) {
 		switch (randomValue) {
-		case 0:
-			return normalBClass();
-		case 1:
-			return bClassToTheRight();
-		case 2:
-			return bClassToTheLeft();
-		case 3:
-			return bClassInverted();
+			case 0:
+				return normalBClass();
+			case 1:
+				return bClassToTheRight();
+			case 2:
+				return bClassToTheLeft();
+			case 3:
+				return bClassInverted();
+		}
+		return null;
+	}
+	
+	public String[] createSClassRandomly(int randomValue) {
+		switch (randomValue) {
+			case 0:
+				return normalSClass();
+			case 1:
+				return sClassToTheRight();
+			case 2:
+				return sClassToTheLeft();
+			case 3:
+				return sClassInverted();
 		}
 		return null;
 	}
@@ -200,6 +214,44 @@ public class SpaceshipServiceImpl implements SpaceshipService{
 		bClass[3] = "*.*";
 		bClass[4] = ".**";
 		return bClass;
+	}
+	
+	private String[] normalSClass() {
+		String[] sClass = new String[5];
+		sClass[0] = ".**.";
+		sClass[1] = "*...";
+		sClass[2] = ".**.";
+		sClass[3] = "...*";
+		sClass[4] = ".**.";
+		return sClass;
+	}
+
+	private String[] sClassToTheRight() {
+		String[] sClass = new String[4];
+		sClass[0] = "...*.";
+		sClass[1] = "*.*.*";
+		sClass[2] = "*.*.*";
+		sClass[3] = ".*...";
+		return sClass;
+	}
+
+	private String[] sClassToTheLeft() {
+		String[] sClass = new String[4];
+		sClass[0] = ".*...";
+		sClass[1] = "*.*.*";
+		sClass[2] = "*.*.*";
+		sClass[3] = "...*.";
+		return sClass;
+	}
+
+	private String[] sClassInverted() {
+		String[] sClass = new String[5];
+		sClass[0] = ".**.";
+		sClass[1] = "...*";
+		sClass[2] = ".**.";
+		sClass[3] = "*...";
+		sClass[4] = ".**.";
+		return sClass;
 	}
 
 }
