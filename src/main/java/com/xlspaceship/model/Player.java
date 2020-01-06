@@ -1,8 +1,14 @@
 package com.xlspaceship.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Player {
 	
+	@JsonProperty("user_id")
 	private String userId;
+	
 	private String[] board = new String[16];
 	
 	public String getUserId() {

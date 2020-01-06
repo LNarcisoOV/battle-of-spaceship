@@ -48,6 +48,20 @@ public class SpaceshipServiceImpl implements SpaceshipService{
 		return null;
 	}
 	
+	public String[] createBClassRandomly(int randomValue) {
+		switch (randomValue) {
+		case 0:
+			return normalBClass();
+		case 1:
+			return bClassToTheRight();
+		case 2:
+			return bClassToTheLeft();
+		case 3:
+			return bClassInverted();
+		}
+		return null;
+	}
+	
 	private String[] normalWinger() {
 		String[] winger = new String[5];
 		winger[0] = "*.*";
@@ -119,37 +133,73 @@ public class SpaceshipServiceImpl implements SpaceshipService{
 	}
 	
 	private String[] normalAClass() {
-		String[] angle = new String[4];
-		angle[0] = ".*.";
-		angle[1] = "*.*";
-		angle[2] = "***";
-		angle[3] = "*.*";
-		return angle;
+		String[] aClass = new String[4];
+		aClass[0] = ".*.";
+		aClass[1] = "*.*";
+		aClass[2] = "***";
+		aClass[3] = "*.*";
+		return aClass;
 	}
 
 	private String[] aClassToTheRight() {
-		String[] angle = new String[3];
-		angle[0] = "***.";
-		angle[1] = ".*.*";
-		angle[2] = "***.";
-		return angle;
+		String[] aClass = new String[3];
+		aClass[0] = "***.";
+		aClass[1] = ".*.*";
+		aClass[2] = "***.";
+		return aClass;
 	}
 
 	private String[] aClassToTheLeft() {
-		String[] angle = new String[3];
-		angle[0] = ".***";
-		angle[1] = "*.*.";
-		angle[2] = ".***";
-		return angle;
+		String[] aClass = new String[3];
+		aClass[0] = ".***";
+		aClass[1] = "*.*.";
+		aClass[2] = ".***";
+		return aClass;
 	}
 
 	private String[] aClassUpsideDown() {
-		String[] angle = new String[4];
-		angle[0] = "*.*";
-		angle[1] = "***";
-		angle[2] = "*.*";
-		angle[3] = ".*.";
-		return angle;
+		String[] aClass = new String[4];
+		aClass[0] = "*.*";
+		aClass[1] = "***";
+		aClass[2] = "*.*";
+		aClass[3] = ".*.";
+		return aClass;
+	}
+	
+	private String[] normalBClass() {
+		String[] bClass = new String[5];
+		bClass[0] = "**.";
+		bClass[1] = "*.*";
+		bClass[2] = "**.";
+		bClass[3] = "*.*";
+		bClass[4] = "**.";
+		return bClass;
+	}
+
+	private String[] bClassToTheRight() {
+		String[] bClass = new String[3];
+		bClass[0] = "*****";
+		bClass[1] = "*.*.*";
+		bClass[2] = ".*.*.";
+		return bClass;
+	}
+
+	private String[] bClassToTheLeft() {
+		String[] bClass = new String[3];
+		bClass[0] = ".*.*.";
+		bClass[1] = "*.*.*";
+		bClass[2] = "*****";
+		return bClass;
+	}
+
+	private String[] bClassInverted() {
+		String[] bClass = new String[5];
+		bClass[0] = ".**";
+		bClass[1] = "*.*";
+		bClass[2] = ".**";
+		bClass[3] = "*.*";
+		bClass[4] = ".**";
+		return bClass;
 	}
 
 }
