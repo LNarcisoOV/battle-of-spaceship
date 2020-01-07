@@ -7,5 +7,6 @@ import com.xlspaceship.model.MatchDTO;
 
 public interface MatchService {
 	public MatchDTO creatNewGame(Match matchRequest);
-	public List<Match> getMatchList();
+	public List<Match> getMatchesList();
+	public Match getMatchBy(String gameId);
 }

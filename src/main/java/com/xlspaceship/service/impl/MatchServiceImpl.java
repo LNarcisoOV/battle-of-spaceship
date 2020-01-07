@@ -223,10 +223,13 @@ public class MatchServiceImpl implements MatchService {
 	}
 	
 
-	public List<Match> getMatchList() {
+	public List<Match> getMatchesList() {
 		return matchList;
 	}
 	
+	public Match getMatchBy(String gameId) {
+		return matchList.stream().filter(m -> m.getGameId().equals(gameId)).findFirst().orElse(null);
+	}
 	
 	
 	
