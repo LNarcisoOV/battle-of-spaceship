@@ -20,6 +20,10 @@ public class MatchDTO {
 	
 	@JsonProperty("starting")
 	private String starting;
+	
+	private Player self;
+	
+	private Player opponent;
 
 	public String getUserId() {
 		return userId;
@@ -60,6 +64,23 @@ public class MatchDTO {
 	public void setStarting(String starting) {
 		this.starting = starting;
 	}
+
+	public Player getSelf() {
+		return self;
+	}
+
+	public void setSelf(Player self) {
+		this.self = self;
+	}
+
+	public Player getOpponent() {
+		return opponent;
+	}
+
+	public void setOpponent(Player opponent) {
+		this.opponent = opponent;
+	}
+	
 	
 	
 }

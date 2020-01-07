@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xlspaceship.model.Match;
+import com.xlspaceship.model.MatchDTO;
 import com.xlspaceship.model.Player;
 import com.xlspaceship.service.MatchService;
 
@@ -22,9 +23,10 @@ public class UserController {
 	private MatchService matchService;
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Match> getMatchBy(@PathVariable String id) {
+	public ResponseEntity<MatchDTO> getMatchBy(@PathVariable String id) {
 		Match match = matchService.getMatchBy(id);
-		return new ResponseEntity<>(match, HttpStatus.OK);
+		MatchDTO matchDTO = matchService.createMatchDTOForJSon(match);
+		return new ResponseEntity<>(matchDTO, HttpStatus.OK);
 	}
 	
 	@GetMapping("/test")

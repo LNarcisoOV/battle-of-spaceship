@@ -47,6 +47,7 @@ public class MatchServiceImpl implements MatchService {
 			match = fillMatch(matchRequest, match);
 		} else {
 			//TODO CHECK BUSINESS RULE
+			//TODO ADD OPPONENT IN THE GAME
 			List<Match> existedMatches = matchList.stream()
 				.filter(m -> m.getSpaceshipProtocol().getHostName().equals(matchRequest.getSpaceshipProtocol().getHostName()))
 				.filter(m -> m.getSpaceshipProtocol().getPort().equals(matchRequest.getSpaceshipProtocol().getPort()))
@@ -67,7 +68,9 @@ public class MatchServiceImpl implements MatchService {
 		if(matchToReturn.getSelf() == null || matchToReturn.getOpponent() == null) {
 			matchToReturn.setUserId("player" + (matchList.size() + 1));
 			matchToReturn.setFullName(matchRequest.getFullName());
+			//TODO FIX IT BELLOW
 			matchToReturn.setGameId("match-" + (matchList.size() + 1));
+			//TODO FIX IT ABOVE
 			matchToReturn.setStarting(matchRequest.getUserId());
 			matchToReturn.setSpaceshipProtocol(matchRequest.getSpaceshipProtocol());
 			
@@ -229,6 +232,13 @@ public class MatchServiceImpl implements MatchService {
 	
 	public Match getMatchBy(String gameId) {
 		return matchList.stream().filter(m -> m.getGameId().equals(gameId)).findFirst().orElse(null);
+	}
+	
+	public MatchDTO createMatchDTOForJSon(Match match) {
+		MatchDTO matchDTO = new MatchDTO();
+		matchDTO.setSelf(match.getSelf());
+		matchDTO.setOpponent(match.getOpponent());
+		return matchDTO;
 	}
 	
 	
