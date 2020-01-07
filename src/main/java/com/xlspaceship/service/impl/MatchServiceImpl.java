@@ -3,11 +3,13 @@ package com.xlspaceship.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xlspaceship.model.Match;
+import com.xlspaceship.model.MatchDTO;
 import com.xlspaceship.model.Player;
 import com.xlspaceship.service.MatchService;
 import com.xlspaceship.service.SpaceshipService;
@@ -22,34 +24,72 @@ public class MatchServiceImpl implements MatchService {
 	
 	private Random random = new Random();
 
-	public Match creatNewGame(Match matchRequest){
+	public MatchDTO creatNewGame(Match matchRequest){
 		Match match = createMatch(matchRequest);
 		matchList.add(match);
-		return match;
+		return createMatchToReturnForXLSS1(match);
+	}
+
+	private MatchDTO createMatchToReturnForXLSS1(Match match) {
+		MatchDTO matchForJSon = new MatchDTO();
+		matchForJSon.setUserId(match.getUserId());
+		matchForJSon.setFullName(match.getFullName());
+		matchForJSon.setGameId(match.getGameId());
+		matchForJSon.setStarting(match.getUserId());
+		
+		return matchForJSon;
 	}
 
 	private Match createMatch(Match matchRequest) {
 		Match match = new Match();
-		match.setUserId("player" + (matchList.size() + 1));
-		match.setFullName(matchRequest.getFullName());
-		match.setGameId("match-" + (matchList.size() + 1));
-		match.setStarting(matchRequest.getUserId());
 		
-		Player self = createPlayer(match);
+		if(matchList == null || matchList.isEmpty()) {
+			match = fillMatch(matchRequest, match);
+		} else {
+			//TODO CHECK BUSINESS RULE
+			List<Match> existedMatches = matchList.stream()
+				.filter(m -> m.getSpaceshipProtocol().getHostName().equals(matchRequest.getSpaceshipProtocol().getHostName()))
+				.filter(m -> m.getSpaceshipProtocol().getPort().equals(matchRequest.getSpaceshipProtocol().getPort()))
+				.collect(Collectors.toList());
+			
+			if(existedMatches != null && !existedMatches.isEmpty() && existedMatches.size() < 2) {
+				match = fillMatch(matchRequest, existedMatches.get(0));
+			} else {
+				match = fillMatch(matchRequest, match);
+			}
+		}
 		
 		return match;
+	}
+
+	private Match fillMatch(Match matchRequest, Match match) {
+		Match matchToReturn = new Match();
+		if(matchToReturn.getSelf() == null || matchToReturn.getOpponent() == null) {
+			matchToReturn.setUserId("player" + (matchList.size() + 1));
+			matchToReturn.setFullName(matchRequest.getFullName());
+			matchToReturn.setGameId("match-" + (matchList.size() + 1));
+			matchToReturn.setStarting(matchRequest.getUserId());
+			matchToReturn.setSpaceshipProtocol(matchRequest.getSpaceshipProtocol());
+			
+			if(matchToReturn.getSelf() == null) {
+				Player self = createPlayer(matchToReturn);
+				matchToReturn.setSelf(self);
+			} else {
+				Player opponent = createPlayer(matchToReturn);
+				match.setOpponent(opponent);
+			}
+		}
+		return matchToReturn;
 	}
 
 	private Player createPlayer(Match match) {
 		Player player = new Player();
 		player.setUserId(match.getUserId());
-		
-		createBoardAndSpaceships(player);
-		
+		player.setBoard(createSpaceshipsAndBoard());
 		return player;
 	}
 
-	private void createBoardAndSpaceships(Player player) {
+	private String[] createSpaceshipsAndBoard() {
 		String[][] board = new String[16][16];
 		
 		putWingerAtTheBoard(board);
@@ -57,6 +97,7 @@ public class MatchServiceImpl implements MatchService {
 		putAClassAtTheBoard(board);
 		putBClassAtTheBoard(board);
 		putSClassAtTheBoard(board);
+		return fillBoardWithDotsAndCreateArrayForPlayer(board);
 	}
 
 	private void putWingerAtTheBoard(String[][] board) {
@@ -87,35 +128,6 @@ public class MatchServiceImpl implements MatchService {
 	private void putSpaceshipAtTheBoard(String[][] board, String[][] spaceship) {
 		int[] rowAndColumnAvailable = findAnAvailablePlaceInTheBoard(board, spaceship);
 		putSpaceshipAtTheBoard(board, spaceship, rowAndColumnAvailable);
-	}
-
-	private void putSpaceshipAtTheBoard(String[][] board, String[][] spaceship, int[] rowAndColumn) {
-		int rowAvailable = rowAndColumn[0];
-		int columnAvailable = rowAndColumn[1];
-		int countSpaceshipRow = 0;
-		int countSpaceshipColumn = 0;
-		
-		if(rowAvailable < columnAvailable) {
-			for (int row = rowAvailable; row < rowAvailable + spaceship.length; row++) {
-				for (int column = columnAvailable; column < columnAvailable + spaceship[0].length; column++) {
-					board[row][column] = spaceship[countSpaceshipRow][countSpaceshipColumn];
-					countSpaceshipColumn++;
-				}
-				countSpaceshipColumn = 0;
-				countSpaceshipRow++;
-			} 
-		} else {
-			countSpaceshipRow = spaceship.length-1;
-			countSpaceshipColumn = spaceship[0].length-1;
-			for (int row = rowAvailable; row > rowAvailable - spaceship.length; row--) {
-				for (int column = columnAvailable; column > columnAvailable - spaceship[0].length; column--) {
-					board[row][column] = spaceship[countSpaceshipRow][countSpaceshipColumn];
-					countSpaceshipColumn--;
-				}
-				countSpaceshipColumn = spaceship[0].length-1;
-				countSpaceshipRow--;
-			}
-		}
 	}
 
 	private int[] findAnAvailablePlaceInTheBoard(String[][] board, String[][] spaceship) {
@@ -167,11 +179,48 @@ public class MatchServiceImpl implements MatchService {
 		
 		return rowAndColumn;
 	}
-
 	
+	private void putSpaceshipAtTheBoard(String[][] board, String[][] spaceship, int[] rowAndColumn) {
+		int rowAvailable = rowAndColumn[0];
+		int columnAvailable = rowAndColumn[1];
+		int countSpaceshipRow = 0;
+		int countSpaceshipColumn = 0;
+		
+		if(rowAvailable < columnAvailable) {
+			for (int row = rowAvailable; row < rowAvailable + spaceship.length; row++) {
+				for (int column = columnAvailable; column < columnAvailable + spaceship[0].length; column++) {
+					board[row][column] = spaceship[countSpaceshipRow][countSpaceshipColumn];
+					countSpaceshipColumn++;
+				}
+				countSpaceshipColumn = 0;
+				countSpaceshipRow++;
+			} 
+		} else {
+			countSpaceshipRow = spaceship.length-1;
+			countSpaceshipColumn = spaceship[0].length-1;
+			for (int row = rowAvailable; row > rowAvailable - spaceship.length; row--) {
+				for (int column = columnAvailable; column > columnAvailable - spaceship[0].length; column--) {
+					board[row][column] = spaceship[countSpaceshipRow][countSpaceshipColumn];
+					countSpaceshipColumn--;
+				}
+				countSpaceshipColumn = spaceship[0].length-1;
+				countSpaceshipRow--;
+			}
+		}
+	}
 	
-	
-	
+	private String[] fillBoardWithDotsAndCreateArrayForPlayer(String[][] board) {
+		String[] convertedBoard = new String[16];
+		String line = "";
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				line += board[i][j] != null ? board[i][j] : ".";
+			}
+			convertedBoard[i] = line;
+			line = "";
+		}
+		return convertedBoard;
+	}
 	
 
 	public List<Match> getMatchList() {
@@ -182,12 +231,11 @@ public class MatchServiceImpl implements MatchService {
 	
 	
 	private void printboard(String[][] board) {
-		// TODO COMENTT
 		System.out.println();
 		for (int row = 0; row < 16; row++) {
 			System.out.println();
 			for (int column = 0; column < 16; column++) {
-				System.out.print(board[row][column] == null ? "." : board[row][column]);
+				System.out.print(board[row][column] == null ? "_" : board[row][column]);
 			}
 		}
 		System.out.println();
@@ -195,8 +243,6 @@ public class MatchServiceImpl implements MatchService {
 
 	private void printspaceship(String[][] spaceship) {
 		System.out.println();
-
-		// TODO COMENTT
 		for (int row = 0; row < spaceship.length; row++) {
 			System.out.println();
 			for (int column = 0; column < spaceship[row].length; column++) {

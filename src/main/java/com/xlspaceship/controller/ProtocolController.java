@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xlspaceship.model.Match;
+import com.xlspaceship.model.MatchDTO;
 import com.xlspaceship.service.MatchService;
 
 @RestController
@@ -19,9 +20,9 @@ public class ProtocolController {
 	private MatchService matchService;
 	
 	@PostMapping("/new")
-	public ResponseEntity<Match> newGame(@RequestBody Match matchRequest) {
-		Match match = matchService.creatNewGame(matchRequest);
-		return new ResponseEntity<>(match, HttpStatus.CREATED);
+	public ResponseEntity<MatchDTO> newGame(@RequestBody Match matchRequest) {
+		MatchDTO matchDTO = matchService.creatNewGame(matchRequest);
+		return new ResponseEntity<>(matchDTO, HttpStatus.CREATED);
 	}
 
 }
