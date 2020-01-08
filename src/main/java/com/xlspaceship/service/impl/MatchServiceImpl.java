@@ -240,10 +240,38 @@ public class MatchServiceImpl implements MatchService {
 	@Override
 	public MatchDTO applySalvoOfShots(Match matchRequest) {
 		Match match = getFirstMatchBy(matchRequest.getGameId());
-		
+		String[] convertedSalvo = replaceLettersToNumbers(matchRequest);
+
 		return null;
 	}	
 	
+	private String[] replaceLettersToNumbers(Match matchRequest) {
+		String[] salvo = matchRequest.getSalvo();
+		if (matchRequest.getSalvo() != null || salvo.length > 0) {
+			for (int i = 0; i < salvo.length; i++) {
+				if (salvo[i].contains("A")) {
+					salvo[i] = salvo[i].replace("A", "10");
+				}
+				if (salvo[i].contains("B")) {
+					salvo[i] = salvo[i].replace("B", "11");
+				}
+				if (salvo[i].contains("C")) {
+					salvo[i] = salvo[i].replace("C", "12");
+				}
+				if (salvo[i].contains("D")) {
+					salvo[i] = salvo[i].replace("D", "13");
+				}
+				if (salvo[i].contains("E")) {
+					salvo[i] = salvo[i].replace("E", "14");
+				}
+				if (salvo[i].contains("F")) {
+					salvo[i] = salvo[i].replace("F", "15");
+				}
+			}
+		}
+		return salvo;
+	}
+
 	private String[] fillBoardWithDotsAndCreateArrayForPlayer(String[][] board) {
 		String[] convertedBoard = new String[16];
 		String line = "";
