@@ -2,7 +2,6 @@ package com.xlspaceship.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Player {
 	
 	@JsonProperty("user_id")

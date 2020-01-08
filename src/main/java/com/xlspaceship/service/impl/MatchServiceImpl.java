@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xlspaceship.model.Game;
 import com.xlspaceship.model.Match;
 import com.xlspaceship.model.MatchDTO;
 import com.xlspaceship.model.Player;
@@ -77,6 +78,9 @@ public class MatchServiceImpl implements MatchService {
 		
 		Player self = createPlayerAndBoard(match);
 		match.setSelf(self);
+
+		Game game = createPlayerTurnForStartTheMatch(match);
+		match.setGame(game);
 		
 		matchList.add(match);
 		return match;
@@ -227,6 +231,12 @@ public class MatchServiceImpl implements MatchService {
 		}
 	}
 	
+	private Game createPlayerTurnForStartTheMatch(Match match) {
+		Game game = new Game();
+		game.setPlayerTurn(match.getUserId());
+		return game;
+	}
+	
 	private String[] fillBoardWithDotsAndCreateArrayForPlayer(String[][] board) {
 		String[] convertedBoard = new String[16];
 		String line = "";
@@ -244,6 +254,11 @@ public class MatchServiceImpl implements MatchService {
 		MatchDTO matchDTO = new MatchDTO();
 		matchDTO.setSelf(match.getSelf());
 		matchDTO.setOpponent(match.getOpponent());
+		
+		if (match.getGame() != null) {
+			matchDTO.setGame(match.getGame());
+		}
+		
 		return matchDTO;
 	}
 

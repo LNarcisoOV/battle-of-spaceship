@@ -2,7 +2,6 @@ package com.xlspaceship.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class Match {
 	
 	@JsonProperty("user_id")
@@ -20,9 +19,14 @@ public class Match {
 	@JsonProperty("starting")
 	private String starting;
 	
+	@JsonProperty("self")
 	private Player self;
 	
+	@JsonProperty("opponent")
 	private Player opponent;
+	
+	@JsonProperty("game")
+	private Game game;
 	
 	public String getUserId() {
 		return userId;
@@ -65,5 +69,11 @@ public class Match {
 	}
 	public void setOpponent(Player opponent) {
 		this.opponent = opponent;
+	}
+	public Game getGame() {
+		return game;
+	}
+	public void setGame(Game game) {
+		this.game = game;
 	}
 }
