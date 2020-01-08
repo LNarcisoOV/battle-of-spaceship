@@ -37,6 +37,15 @@ public class MatchServiceImpl implements MatchService {
 		matchForJSon.setStarting(match.getUserId());
 		return matchForJSon;
 	}
+	
+	public MatchDTO getMatchByIdForXLSS2(String gameId) {
+		Match match = getFirstMatchBy(gameId);
+		if(match != null) {
+			return createMatchDTOToReturnForXLSS2(match);
+		} else { 
+			return null;
+		}
+	}
 
 	private Match createMatch(Match matchRequest) {
 		Match match = new Match();
@@ -231,7 +240,7 @@ public class MatchServiceImpl implements MatchService {
 		return convertedBoard;
 	}
 	
-	public MatchDTO createMatchDTOForJSon(Match match) {
+	public MatchDTO createMatchDTOToReturnForXLSS2(Match match) {
 		MatchDTO matchDTO = new MatchDTO();
 		matchDTO.setSelf(match.getSelf());
 		matchDTO.setOpponent(match.getOpponent());
@@ -242,7 +251,7 @@ public class MatchServiceImpl implements MatchService {
 		return matchList;
 	}
 	
-	public Match getMatchBy(String gameId) {
+	private Match getFirstMatchBy(String gameId) {
 		return matchList.stream().filter(m -> m.getGameId().equals(gameId)).findFirst().orElse(null);
 	}
 	
