@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.xlspaceship.model.Match;
 import com.xlspaceship.model.MatchDTO;
 import com.xlspaceship.service.MatchService;
+import com.xlspaceship.service.SalvoService;
 
 @RestController
 @RequestMapping("/protocol/game")
@@ -21,6 +22,9 @@ public class ProtocolController {
 	
 	@Autowired 
 	private MatchService matchService;
+	
+	@Autowired
+	private SalvoService salvoService;
 	
 	@PostMapping("/new")
 	public ResponseEntity<MatchDTO> newGame(@RequestBody Match matchRequest) {
@@ -32,7 +36,7 @@ public class ProtocolController {
 	public ResponseEntity<String[]> receiveASalvoOfShots(@PathVariable String id, @RequestBody Match matchRequest) {
 		if(Strings.isNotEmpty(id) && matchRequest.getSalvo() != null && matchRequest.getSalvo().length > 0) {
 			matchRequest.setGameId(id);
-			MatchDTO matchDTO = matchService.applySalvoOfShots(matchRequest);
+			MatchDTO matchDTO = salvoService.applySalvoOfShots(matchRequest);
 			return new ResponseEntity<>(HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(HttpStatus.OK);

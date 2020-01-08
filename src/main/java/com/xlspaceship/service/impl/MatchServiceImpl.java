@@ -107,49 +107,31 @@ public class MatchServiceImpl implements MatchService {
 	private Player createPlayerAndBoard(Match match) {
 		Player player = new Player();
 		player.setUserId(match.getUserId());
-		createSpaceshipsAndBoard(player);
+		createSpaceshipsAndBoard(match, player);
 		return player;
 	}
 
-	private void createSpaceshipsAndBoard(Player player) {
+	private void createSpaceshipsAndBoard(Match match, Player player) {
 		String[][] board = new String[16][16];
+		match.setListOfPositionsInTheBoard(new ArrayList<>());
 		
-		putWingerAtTheBoard(board);
-		putAngleAtTheBoard(board);
-		putAClassAtTheBoard(board);
-		putBClassAtTheBoard(board);
-		putSClassAtTheBoard(board);
+		String[][] winger = spaceshipService.createWingerRandomly(random.nextInt(2));
+		String[][] angle = spaceshipService.createAngleRandomly(random.nextInt(6));
+		String[][] aClass = spaceshipService.createAClassRandomly(random.nextInt(4));
+		String[][] bClass = spaceshipService.createBClassRandomly(random.nextInt(4));
+		String[][] sClass = spaceshipService.createSClassRandomly(random.nextInt(4));
+		
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, winger, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, angle, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, aClass, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, bClass, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, sClass, board);
 		fillBoardWithDotsAndCreateArrayForPlayer(player, board);
 	}
 
-	private void putWingerAtTheBoard(String[][] board) {
-		String[][] winger = spaceshipService.createWingerRandomly(random.nextInt(2));
-		putSpaceshipAtTheBoard(board, winger);
-	}
-	
-	private void putAngleAtTheBoard(String[][] board) {
-		String[][] angle = spaceshipService.createAngleRandomly(random.nextInt(6));
-		putSpaceshipAtTheBoard(board, angle);
-	}
-	
-	private void putAClassAtTheBoard(String[][] board) {
-		String[][] aClass = spaceshipService.createAClassRandomly(random.nextInt(4));
-		putSpaceshipAtTheBoard(board, aClass);
-	}
-	
-	private void putBClassAtTheBoard(String[][] board) {
-		String[][] bClass = spaceshipService.createBClassRandomly(random.nextInt(4));
-		putSpaceshipAtTheBoard(board, bClass);
-	}
-	
-	private void putSClassAtTheBoard(String[][] board) {
-		String[][] sClass = spaceshipService.createSClassRandomly(random.nextInt(4));
-		putSpaceshipAtTheBoard(board, sClass);
-	}
-	
-	private void putSpaceshipAtTheBoard(String[][] board, String[][] spaceship) {
+	private void findAvailablePlaceAndPutSpaceAtTheBoard(Match match, String[][] spaceship, String[][] board) {
 		int[] rowAndColumnAvailable = findAnAvailablePlaceInTheBoard(board, spaceship);
-		putSpaceshipAtTheBoard(board, spaceship, rowAndColumnAvailable);
+		putSpaceshipAtTheBoard(match, board, spaceship, rowAndColumnAvailable);
 	}
 
 	private int[] findAnAvailablePlaceInTheBoard(String[][] board, String[][] spaceship) {
@@ -202,11 +184,12 @@ public class MatchServiceImpl implements MatchService {
 		return rowAndColumn;
 	}
 	
-	private void putSpaceshipAtTheBoard(String[][] board, String[][] spaceship, int[] rowAndColumn) {
+	private void putSpaceshipAtTheBoard(Match match, String[][] board, String[][] spaceship, int[] rowAndColumn) {
 		int rowAvailable = rowAndColumn[0];
 		int columnAvailable = rowAndColumn[1];
 		int countSpaceshipRow = 0;
 		int countSpaceshipColumn = 0;
+		int[] positionInTheBoard = new int[2];
 		
 		if(rowAvailable < columnAvailable) {
 			for (int row = rowAvailable; row < rowAvailable + spaceship.length; row++) {
@@ -229,6 +212,9 @@ public class MatchServiceImpl implements MatchService {
 				countSpaceshipRow--;
 			}
 		}
+		
+//		TODO
+//		match.getListOfPositionsInTheBoard().add(rowAndColumn);
 	}
 	
 	private Game createPlayerTurnForStartTheMatch(Match match) {
@@ -237,69 +223,7 @@ public class MatchServiceImpl implements MatchService {
 		return game;
 	}
 	
-	@Override
-	public MatchDTO applySalvoOfShots(Match matchRequest) {
-		String[] salvo = replaceLettersToNumbers(matchRequest);
-		Match match = getFirstMatchBy(matchRequest.getGameId());
-		
-		if(match.getSelf().getUserId().equals(match.getGame().getPlayerTurn())) {
-			applyShots(match, matchRequest, match.getOpponent(), salvo);
-			match.getGame().setPlayerTurn(match.getOpponent().getUserId());
-		} else {
-			applyShots(match, matchRequest, match.getSelf(), salvo);
-			match.getGame().setPlayerTurn(match.getSelf().getUserId());
-		}
-
-		return null;
-	}	
-	
-	private void applyShots(Match match, Match matchRequest, Player player, String[] salvo) {
-		String[][] board = player.getBoardForSalvo();
-		for (int salvoIndex = 0; salvoIndex < salvo.length; salvoIndex++) {
-			
-			String[] splitedSalvo = salvo[salvoIndex].split("x");
-			int shotRow = Integer.parseInt(splitedSalvo[0]);
-			int shotColumn = Integer.parseInt(splitedSalvo[1]);
-			
-			if(board[shotRow][shotColumn].equals("*") || board[shotRow][shotColumn].equals("X")) {
-				board[shotRow][shotColumn] = "X";
-			} else {
-				board[shotRow][shotColumn] = "-";
-			}
-		}
-		player.setBoardForSalvo(board);
-		fillBoardWithDotsAndCreateArrayForPlayer(player, board);
-	}
-
-	private String[] replaceLettersToNumbers(Match matchRequest) {
-		String[] salvo = new String[5];
-		salvo = matchRequest.getSalvo();
-		if (matchRequest.getSalvo() != null || salvo.length > 0) {
-			for (int i = 0; i < salvo.length; i++) {
-				if (salvo[i].contains("A")) {
-					salvo[i] = salvo[i].replace("A", "10");
-				}
-				if (salvo[i].contains("B")) {
-					salvo[i] = salvo[i].replace("B", "11");
-				}
-				if (salvo[i].contains("C")) {
-					salvo[i] = salvo[i].replace("C", "12");
-				}
-				if (salvo[i].contains("D")) {
-					salvo[i] = salvo[i].replace("D", "13");
-				}
-				if (salvo[i].contains("E")) {
-					salvo[i] = salvo[i].replace("E", "14");
-				}
-				if (salvo[i].contains("F")) {
-					salvo[i] = salvo[i].replace("F", "15");
-				}
-			}
-		}
-		return salvo;
-	}
-
-	private void fillBoardWithDotsAndCreateArrayForPlayer(Player player, String[][] board) {
+	public void fillBoardWithDotsAndCreateArrayForPlayer(Player player, String[][] board) {
 		String[] convertedBoard = new String[16];
 		String line = "";
 		for (int i = 0; i < 16; i++) {
@@ -343,7 +267,7 @@ public class MatchServiceImpl implements MatchService {
 		return matchList;
 	}
 	
-	private Match getFirstMatchBy(String gameId) {
+	public Match getFirstMatchBy(String gameId) {
 		return matchList.stream().filter(m -> m.getGameId().equals(gameId)).findFirst().orElse(null);
 	}
 	
