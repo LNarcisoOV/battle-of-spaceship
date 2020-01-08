@@ -9,4 +9,5 @@ public interface MatchService {
 	public MatchDTO creatNewGame(Match matchRequest);
 	public List<Match> getMatchesList();
 	public MatchDTO getMatchByIdForXLSS2(String gameId);
+	public MatchDTO applySalvoOfShots(Match matchRequest);
 }

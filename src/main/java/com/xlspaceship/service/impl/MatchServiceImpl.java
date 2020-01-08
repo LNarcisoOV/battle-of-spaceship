@@ -237,6 +237,13 @@ public class MatchServiceImpl implements MatchService {
 		return game;
 	}
 	
+	@Override
+	public MatchDTO applySalvoOfShots(Match matchRequest) {
+		Match match = getFirstMatchBy(matchRequest.getGameId());
+		
+		return null;
+	}	
+	
 	private String[] fillBoardWithDotsAndCreateArrayForPlayer(String[][] board) {
 		String[] convertedBoard = new String[16];
 		String line = "";

@@ -28,6 +28,9 @@ public class Match {
 	@JsonProperty("game")
 	private Game game;
 	
+	@JsonProperty("salvo")
+	private String[] salvo;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -75,5 +78,11 @@ public class Match {
 	}
 	public void setGame(Game game) {
 		this.game = game;
+	}
+	public String[] getSalvo() {
+		return salvo;
+	}
+	public void setSalvo(String[] salvo) {
+		this.salvo = salvo;
 	}
 }
