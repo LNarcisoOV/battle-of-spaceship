@@ -21,22 +21,20 @@ public class MatchServiceImpl implements MatchService {
 	private SpaceshipService spaceshipService;
 
 	private List<Match> matchList = new ArrayList<Match>();
-	
+	private int counterForMatchId = 0;
 	private Random random = new Random();
 
 	public MatchDTO creatNewGame(Match matchRequest){
 		Match match = createMatch(matchRequest);
-		matchList.add(match);
-		return createMatchToReturnForXLSS1(match);
+		return createMatchDTOToReturnForXLSS1(match);
 	}
 
-	private MatchDTO createMatchToReturnForXLSS1(Match match) {
+	private MatchDTO createMatchDTOToReturnForXLSS1(Match match) {
 		MatchDTO matchForJSon = new MatchDTO();
 		matchForJSon.setUserId(match.getUserId());
 		matchForJSon.setFullName(match.getFullName());
 		matchForJSon.setGameId(match.getGameId());
 		matchForJSon.setStarting(match.getUserId());
-		
 		return matchForJSon;
 	}
 
@@ -44,48 +42,56 @@ public class MatchServiceImpl implements MatchService {
 		Match match = new Match();
 		
 		if(matchList == null || matchList.isEmpty()) {
-			match = fillMatch(matchRequest, match);
+			match = fillNewMatch(matchRequest, match);
 		} else {
-			//TODO CHECK BUSINESS RULE
-			//TODO ADD OPPONENT IN THE GAME
 			List<Match> existedMatches = matchList.stream()
-				.filter(m -> m.getSpaceshipProtocol().getHostName().equals(matchRequest.getSpaceshipProtocol().getHostName()))
-				.filter(m -> m.getSpaceshipProtocol().getPort().equals(matchRequest.getSpaceshipProtocol().getPort()))
+				.filter(m -> m.getSpaceshipProtocol() != null && m.getSpaceshipProtocol().getHostName().equals(matchRequest.getSpaceshipProtocol().getHostName()))
+				.filter(m -> m.getSpaceshipProtocol() != null && m.getSpaceshipProtocol().getPort().equals(matchRequest.getSpaceshipProtocol().getPort()))
 				.collect(Collectors.toList());
 			
 			if(existedMatches != null && !existedMatches.isEmpty() && existedMatches.size() < 2) {
-				match = fillMatch(matchRequest, existedMatches.get(0));
-			} else {
-				match = fillMatch(matchRequest, match);
+				match = fillExistedMatch(matchRequest, existedMatches.get(0));
+			} else if(existedMatches == null || existedMatches.isEmpty()) {
+				match = fillNewMatch(matchRequest, match);
 			}
 		}
 		
 		return match;
 	}
 
-	private Match fillMatch(Match matchRequest, Match match) {
-		Match matchToReturn = new Match();
-		if(matchToReturn.getSelf() == null || matchToReturn.getOpponent() == null) {
-			matchToReturn.setUserId("player" + (matchList.size() + 1));
-			matchToReturn.setFullName(matchRequest.getFullName());
-			//TODO FIX IT BELLOW
-			matchToReturn.setGameId("match-" + (matchList.size() + 1));
-			//TODO FIX IT ABOVE
-			matchToReturn.setStarting(matchRequest.getUserId());
-			matchToReturn.setSpaceshipProtocol(matchRequest.getSpaceshipProtocol());
-			
-			if(matchToReturn.getSelf() == null) {
-				Player self = createPlayer(matchToReturn);
-				matchToReturn.setSelf(self);
-			} else {
-				Player opponent = createPlayer(matchToReturn);
-				match.setOpponent(opponent);
-			}
-		}
-		return matchToReturn;
+	private Match fillNewMatch(Match matchRequest, Match match) {
+		match.setUserId(matchRequest.getUserId());
+		match.setFullName(matchRequest.getFullName());
+		match.setGameId("match-" + ++counterForMatchId);
+		match.setStarting(matchRequest.getUserId());
+		match.setSpaceshipProtocol(matchRequest.getSpaceshipProtocol());
+		
+		Player self = createPlayerAndBoard(match);
+		match.setSelf(self);
+		
+		matchList.add(match);
+		return match;
 	}
 
-	private Player createPlayer(Match match) {
+	private Match fillExistedMatch(Match matchRequest, Match existedMatch) {
+		Match newMatch = new Match();
+		newMatch.setUserId(matchRequest.getUserId());
+		newMatch.setFullName(matchRequest.getFullName());
+		newMatch.setGameId(existedMatch.getGameId());
+		newMatch.setStarting(matchRequest.getUserId());
+		newMatch.setSpaceshipProtocol(matchRequest.getSpaceshipProtocol());
+
+		Player self = createPlayerAndBoard(newMatch);
+		newMatch.setSelf(self);
+		newMatch.setOpponent(existedMatch.getSelf());
+		
+		existedMatch.setOpponent(newMatch.getSelf());
+		
+		matchList.add(newMatch);
+		return newMatch;
+	}
+
+	private Player createPlayerAndBoard(Match match) {
 		Player player = new Player();
 		player.setUserId(match.getUserId());
 		player.setBoard(createSpaceshipsAndBoard());
@@ -225,6 +231,12 @@ public class MatchServiceImpl implements MatchService {
 		return convertedBoard;
 	}
 	
+	public MatchDTO createMatchDTOForJSon(Match match) {
+		MatchDTO matchDTO = new MatchDTO();
+		matchDTO.setSelf(match.getSelf());
+		matchDTO.setOpponent(match.getOpponent());
+		return matchDTO;
+	}
 
 	public List<Match> getMatchesList() {
 		return matchList;
@@ -233,15 +245,6 @@ public class MatchServiceImpl implements MatchService {
 	public Match getMatchBy(String gameId) {
 		return matchList.stream().filter(m -> m.getGameId().equals(gameId)).findFirst().orElse(null);
 	}
-	
-	public MatchDTO createMatchDTOForJSon(Match match) {
-		MatchDTO matchDTO = new MatchDTO();
-		matchDTO.setSelf(match.getSelf());
-		matchDTO.setOpponent(match.getOpponent());
-		return matchDTO;
-	}
-	
-	
 	
 	private void printboard(String[][] board) {
 		System.out.println();
@@ -264,8 +267,4 @@ public class MatchServiceImpl implements MatchService {
 		}
 		System.out.println();	
 	}
-	
-	
-	
-	
 }
