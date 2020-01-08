@@ -1,13 +1,17 @@
 package com.xlspaceship.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Player {
 	
 	@JsonProperty("user_id")
 	private String userId;
 	
 	private String[] board = new String[16];
+	
+	private String[][] boardForSalvo = new String[16][16];
 	
 	public String getUserId() {
 		return userId;
@@ -24,6 +28,12 @@ public class Player {
 	public void setBoard(String[] board) {
 		this.board = board;
 	}
-	
-	
+
+	public String[][] getBoardForSalvo() {
+		return boardForSalvo;
+	}
+
+	public void setBoardForSalvo(String[][] boardForSalvo) {
+		this.boardForSalvo = boardForSalvo;
+	}
 }

@@ -30,7 +30,7 @@ public class ProtocolController {
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<String[]> receiveASalvoOfShots(@PathVariable String id, @RequestBody Match matchRequest) {
-		if(Strings.isNotEmpty(id)) {
+		if(Strings.isNotEmpty(id) && matchRequest.getSalvo() != null && matchRequest.getSalvo().length > 0) {
 			matchRequest.setGameId(id);
 			MatchDTO matchDTO = matchService.applySalvoOfShots(matchRequest);
 			return new ResponseEntity<>(HttpStatus.OK);

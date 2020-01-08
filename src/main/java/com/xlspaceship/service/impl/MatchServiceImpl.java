@@ -107,11 +107,11 @@ public class MatchServiceImpl implements MatchService {
 	private Player createPlayerAndBoard(Match match) {
 		Player player = new Player();
 		player.setUserId(match.getUserId());
-		player.setBoard(createSpaceshipsAndBoard());
+		createSpaceshipsAndBoard(player);
 		return player;
 	}
 
-	private String[] createSpaceshipsAndBoard() {
+	private void createSpaceshipsAndBoard(Player player) {
 		String[][] board = new String[16][16];
 		
 		putWingerAtTheBoard(board);
@@ -119,7 +119,7 @@ public class MatchServiceImpl implements MatchService {
 		putAClassAtTheBoard(board);
 		putBClassAtTheBoard(board);
 		putSClassAtTheBoard(board);
-		return fillBoardWithDotsAndCreateArrayForPlayer(board);
+		fillBoardWithDotsAndCreateArrayForPlayer(player, board);
 	}
 
 	private void putWingerAtTheBoard(String[][] board) {
@@ -239,14 +239,41 @@ public class MatchServiceImpl implements MatchService {
 	
 	@Override
 	public MatchDTO applySalvoOfShots(Match matchRequest) {
+		String[] salvo = replaceLettersToNumbers(matchRequest);
 		Match match = getFirstMatchBy(matchRequest.getGameId());
-		String[] convertedSalvo = replaceLettersToNumbers(matchRequest);
+		
+		if(match.getSelf().getUserId().equals(match.getGame().getPlayerTurn())) {
+			applyShots(match, matchRequest, match.getOpponent(), salvo);
+			match.getGame().setPlayerTurn(match.getOpponent().getUserId());
+		} else {
+			applyShots(match, matchRequest, match.getSelf(), salvo);
+			match.getGame().setPlayerTurn(match.getSelf().getUserId());
+		}
 
 		return null;
 	}	
 	
+	private void applyShots(Match match, Match matchRequest, Player player, String[] salvo) {
+		String[][] board = player.getBoardForSalvo();
+		for (int salvoIndex = 0; salvoIndex < salvo.length; salvoIndex++) {
+			
+			String[] splitedSalvo = salvo[salvoIndex].split("x");
+			int shotRow = Integer.parseInt(splitedSalvo[0]);
+			int shotColumn = Integer.parseInt(splitedSalvo[1]);
+			
+			if(board[shotRow][shotColumn].equals("*") || board[shotRow][shotColumn].equals("X")) {
+				board[shotRow][shotColumn] = "X";
+			} else {
+				board[shotRow][shotColumn] = "-";
+			}
+		}
+		player.setBoardForSalvo(board);
+		fillBoardWithDotsAndCreateArrayForPlayer(player, board);
+	}
+
 	private String[] replaceLettersToNumbers(Match matchRequest) {
-		String[] salvo = matchRequest.getSalvo();
+		String[] salvo = new String[5];
+		salvo = matchRequest.getSalvo();
 		if (matchRequest.getSalvo() != null || salvo.length > 0) {
 			for (int i = 0; i < salvo.length; i++) {
 				if (salvo[i].contains("A")) {
@@ -272,23 +299,38 @@ public class MatchServiceImpl implements MatchService {
 		return salvo;
 	}
 
-	private String[] fillBoardWithDotsAndCreateArrayForPlayer(String[][] board) {
+	private void fillBoardWithDotsAndCreateArrayForPlayer(Player player, String[][] board) {
 		String[] convertedBoard = new String[16];
 		String line = "";
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
-				line += board[i][j] != null ? board[i][j] : ".";
+				if(board[i][j] == null) {
+					board[i][j] = ".";
+				}
+				line += board[i][j];
 			}
 			convertedBoard[i] = line;
 			line = "";
 		}
-		return convertedBoard;
+		
+		player.setBoard(convertedBoard);
+		player.setBoardForSalvo(board);
 	}
 	
 	public MatchDTO createMatchDTOToReturnForXLSS2(Match match) {
 		MatchDTO matchDTO = new MatchDTO();
-		matchDTO.setSelf(match.getSelf());
-		matchDTO.setOpponent(match.getOpponent());
+		Player self = new Player();
+		Player opponent = new Player();
+		
+		self.setUserId(match.getSelf().getUserId());
+		self.setBoard(match.getSelf().getBoard());
+		self.setBoardForSalvo(null);
+		opponent.setUserId(match.getOpponent().getUserId());
+		opponent.setBoard(match.getOpponent().getBoard());
+		opponent.setBoardForSalvo(null);
+		
+		matchDTO.setSelf(self);
+		matchDTO.setOpponent(opponent);
 		
 		if (match.getGame() != null) {
 			matchDTO.setGame(match.getGame());
