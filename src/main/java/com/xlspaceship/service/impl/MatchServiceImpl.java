@@ -30,15 +30,6 @@ public class MatchServiceImpl implements MatchService {
 		return createMatchDTOToReturnForXLSS1(match);
 	}
 
-	private MatchDTO createMatchDTOToReturnForXLSS1(Match match) {
-		MatchDTO matchForJSon = new MatchDTO();
-		matchForJSon.setUserId(match.getUserId());
-		matchForJSon.setFullName(match.getFullName());
-		matchForJSon.setGameId(match.getGameId());
-		matchForJSon.setStarting(match.getUserId());
-		return matchForJSon;
-	}
-	
 	public MatchDTO getMatchByIdForXLSS2(String gameId) {
 		Match match = getFirstMatchBy(gameId);
 		if(match != null) {
@@ -59,9 +50,9 @@ public class MatchServiceImpl implements MatchService {
 				.filter(m -> m.getSpaceshipProtocol() != null && m.getSpaceshipProtocol().getPort().equals(matchRequest.getSpaceshipProtocol().getPort()))
 				.collect(Collectors.toList());
 			
-			if(existedMatches != null && !existedMatches.isEmpty() && existedMatches.size() < 2) {
-				match = fillExistedMatch(matchRequest, existedMatches.get(0));
-			} else if(existedMatches == null || existedMatches.isEmpty()) {
+			if(existedMatches != null && !existedMatches.isEmpty() && existedMatches.get(existedMatches.size()-1).getOpponent() == null) {
+				match = fillExistingMatchWithTheOpponent(matchRequest, existedMatches.get(existedMatches.size()-1));
+			} else {
 				match = fillNewMatch(matchRequest, match);
 			}
 		}
@@ -86,22 +77,11 @@ public class MatchServiceImpl implements MatchService {
 		return match;
 	}
 
-	private Match fillExistedMatch(Match matchRequest, Match existedMatch) {
-		Match newMatch = new Match();
-		newMatch.setUserId(matchRequest.getUserId());
-		newMatch.setFullName(matchRequest.getFullName());
-		newMatch.setGameId(existedMatch.getGameId());
-		newMatch.setStarting(matchRequest.getUserId());
-		newMatch.setSpaceshipProtocol(matchRequest.getSpaceshipProtocol());
-
-		Player self = createPlayerAndBoard(newMatch);
-		newMatch.setSelf(self);
-		newMatch.setOpponent(existedMatch.getSelf());
-		
-		existedMatch.setOpponent(newMatch.getSelf());
-		
-		matchList.add(newMatch);
-		return newMatch;
+	private Match fillExistingMatchWithTheOpponent(Match matchRequest, Match existedMatch) {
+		matchRequest.setGameId(existedMatch.getGameId());
+		Player opponent = createPlayerAndBoard(matchRequest);
+		existedMatch.setOpponent(opponent);
+		return matchRequest;
 	}
 
 	private Player createPlayerAndBoard(Match match) {
@@ -239,6 +219,15 @@ public class MatchServiceImpl implements MatchService {
 		
 		player.setBoard(convertedBoard);
 		player.setBoardForSalvo(board);
+	}
+	
+	private MatchDTO createMatchDTOToReturnForXLSS1(Match match) {
+		MatchDTO matchForJSon = new MatchDTO();
+		matchForJSon.setUserId(match.getUserId());
+		matchForJSon.setFullName(match.getFullName());
+		matchForJSon.setGameId(match.getGameId());
+		matchForJSon.setStarting(match.getUserId());
+		return matchForJSon;
 	}
 	
 	public MatchDTO createMatchDTOToReturnForXLSS2(Match match) {
