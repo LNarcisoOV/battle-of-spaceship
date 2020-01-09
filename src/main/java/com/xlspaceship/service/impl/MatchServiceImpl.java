@@ -127,13 +127,13 @@ public class MatchServiceImpl implements MatchService {
 			try {
 				if(rowRandomly < columnRandomly) {
 					// Condition to find available places from the beginning to the end.
-					outer:
+					outerLoop:
 					for (int row = rowRandomly; row < rowRandomly + spaceship.length; row++) {
 						for (int column = columnRandomly; column < columnRandomly + spaceship[0].length; column++) {
 							if (board[row][column] != null) {
 								shallSearchAPlaceInTheBoard = true;
 								shallCreateArraysWithIndex = false;
-								break outer;
+								break outerLoop;
 							}
 						}
 					}
@@ -169,9 +169,17 @@ public class MatchServiceImpl implements MatchService {
 		int columnAvailable = rowAndColumn[1];
 		int countSpaceshipRow = 0;
 		int countSpaceshipColumn = 0;
-		int[] positionInTheBoard = new int[2];
+		
+//		Storing the position in the board for this spaceship
+//		to check if the spaceship was killed ahead
+		int[] positionInTheBoard = new int[4];
 		
 		if(rowAvailable < columnAvailable) {
+			positionInTheBoard[0] = rowAvailable;
+			positionInTheBoard[1] = columnAvailable;
+			positionInTheBoard[2] = rowAvailable + spaceship.length -1;
+			positionInTheBoard[3] = columnAvailable + spaceship[0].length -1;
+			
 			for (int row = rowAvailable; row < rowAvailable + spaceship.length; row++) {
 				for (int column = columnAvailable; column < columnAvailable + spaceship[0].length; column++) {
 					board[row][column] = spaceship[countSpaceshipRow][countSpaceshipColumn];
@@ -181,6 +189,11 @@ public class MatchServiceImpl implements MatchService {
 				countSpaceshipRow++;
 			} 
 		} else {
+			positionInTheBoard[0] = rowAvailable;
+			positionInTheBoard[1] = columnAvailable;
+			positionInTheBoard[2] = rowAvailable - spaceship.length + 1 ;
+			positionInTheBoard[3] = columnAvailable - spaceship[0].length + 1 ;
+			
 			countSpaceshipRow = spaceship.length-1;
 			countSpaceshipColumn = spaceship[0].length-1;
 			for (int row = rowAvailable; row > rowAvailable - spaceship.length; row--) {
@@ -193,8 +206,7 @@ public class MatchServiceImpl implements MatchService {
 			}
 		}
 		
-//		TODO
-//		match.getListOfPositionsInTheBoard().add(rowAndColumn);
+		match.getListOfPositionsInTheBoard().add(positionInTheBoard);
 	}
 	
 	private Game createPlayerTurnForStartTheMatch(Match match) {
@@ -235,15 +247,19 @@ public class MatchServiceImpl implements MatchService {
 		Player self = new Player();
 		Player opponent = new Player();
 		
-		self.setUserId(match.getSelf().getUserId());
-		self.setBoard(match.getSelf().getBoard());
-		self.setBoardForSalvo(null);
-		opponent.setUserId(match.getOpponent().getUserId());
-		opponent.setBoard(match.getOpponent().getBoard());
-		opponent.setBoardForSalvo(null);
+		if(match.getSelf() != null) {
+			self.setUserId(match.getSelf().getUserId());
+			self.setBoard(match.getSelf().getBoard());
+			self.setBoardForSalvo(null);
+			matchDTO.setSelf(self);
+		}
 		
-		matchDTO.setSelf(self);
-		matchDTO.setOpponent(opponent);
+		if(match.getOpponent() != null) {
+			opponent.setUserId(match.getOpponent().getUserId());
+			opponent.setBoard(match.getOpponent().getBoard());
+			opponent.setBoardForSalvo(null);
+			matchDTO.setOpponent(opponent);
+		}
 		
 		if (match.getGame() != null) {
 			matchDTO.setGame(match.getGame());
