@@ -31,7 +31,7 @@ public class MatchServiceImpl implements MatchService {
 	}
 
 	public MatchDTO getMatchByIdForXLSS2(String gameId) {
-		Match match = getFirstMatchBy(gameId);
+		Match match = getMatchBy(gameId);
 		if(match != null) {
 			return createMatchDTOToReturnForXLSS2(match);
 		} else { 
@@ -256,7 +256,7 @@ public class MatchServiceImpl implements MatchService {
 		return matchList;
 	}
 	
-	public Match getFirstMatchBy(String gameId) {
+	public Match getMatchBy(String gameId) {
 		return matchList.stream().filter(m -> m.getGameId().equals(gameId)).findFirst().orElse(null);
 	}
 	

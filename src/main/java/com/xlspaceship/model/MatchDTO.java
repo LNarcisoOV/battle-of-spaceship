@@ -1,5 +1,7 @@
 package com.xlspaceship.model;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,6 +31,9 @@ public class MatchDTO {
 	
 	@JsonProperty("game")
 	private Game game;
+	
+	@JsonProperty("salvo")
+	private Map<String, String> salvo;
 
 	public String getUserId() {
 		return userId;
@@ -92,5 +97,13 @@ public class MatchDTO {
 
 	public void setGame(Game game) {
 		this.game = game;
+	}
+
+	public Map<String, String> getSalvo() {
+		return salvo;
+	}
+
+	public void setSalvo(Map<String, String> salvo) {
+		this.salvo = salvo;
 	}
 }

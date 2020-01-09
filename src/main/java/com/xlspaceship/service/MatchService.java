@@ -10,6 +10,6 @@ public interface MatchService {
 	public MatchDTO creatNewGame(Match matchRequest);
 	public List<Match> getMatchesList();
 	public MatchDTO getMatchByIdForXLSS2(String gameId);
-	public Match getFirstMatchBy(String gameId);
+	public Match getMatchBy(String gameId);
 	public void fillBoardWithDotsAndCreateArrayForPlayer(Player player, String[][] board);
 }
