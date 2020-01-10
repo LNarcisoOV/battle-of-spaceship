@@ -37,7 +37,13 @@ public class ProtocolController {
 		if(Strings.isNotEmpty(id) && matchRequest.getSalvo() != null && matchRequest.getSalvo().length > 0) {
 			matchRequest.setGameId(id);
 			MatchDTO matchDTO = salvoService.applySalvoOfShots(matchRequest);
-			return new ResponseEntity<>(matchDTO, HttpStatus.OK);
+			
+			if(matchDTO.getHttpNotFoundCode() == null) {
+				return new ResponseEntity<>(matchDTO, HttpStatus.OK);
+			} else {
+				matchDTO.setHttpNotFoundCode(null);
+				return new ResponseEntity<>(matchDTO, HttpStatus.NOT_FOUND);
+			}
 		}else {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}

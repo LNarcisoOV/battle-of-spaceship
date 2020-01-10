@@ -33,8 +33,6 @@ public class Match {
 	@JsonProperty("salvo")
 	private String[] salvo;
 	
-	private List<int[]> listOfPositionsInTheBoard;
-	
 	public String getUserId() {
 		return userId;
 	}
@@ -89,12 +87,4 @@ public class Match {
 	public void setSalvo(String[] salvo) {
 		this.salvo = salvo;
 	}
-	public List<int[]> getListOfPositionsInTheBoard() {
-		return listOfPositionsInTheBoard;
-	}
-	public void setListOfPositionsInTheBoard(List<int[]> listOfPositionsInTheBoard) {
-		this.listOfPositionsInTheBoard = listOfPositionsInTheBoard;
-	}
-	
-	
 }

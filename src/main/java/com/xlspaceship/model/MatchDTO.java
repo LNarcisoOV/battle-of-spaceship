@@ -34,6 +34,8 @@ public class MatchDTO {
 	
 	@JsonProperty("salvo")
 	private Map<String, String> salvo;
+	
+	private Integer httpNotFoundCode;
 
 	public String getUserId() {
 		return userId;
@@ -106,4 +108,13 @@ public class MatchDTO {
 	public void setSalvo(Map<String, String> salvo) {
 		this.salvo = salvo;
 	}
+
+	public Integer getHttpNotFoundCode() {
+		return httpNotFoundCode;
+	}
+
+	public void setHttpNotFoundCode(Integer httpNotFoundCode) {
+		this.httpNotFoundCode = httpNotFoundCode;
+	}
+	
 }

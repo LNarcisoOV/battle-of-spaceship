@@ -93,7 +93,7 @@ public class MatchServiceImpl implements MatchService {
 
 	private void createSpaceshipsAndBoard(Match match, Player player) {
 		String[][] board = new String[16][16];
-		match.setListOfPositionsInTheBoard(new ArrayList<>());
+		player.setListOfPositionsInTheBoard(new ArrayList<>());
 		
 		String[][] winger = spaceshipService.createWingerRandomly(random.nextInt(2));
 		String[][] angle = spaceshipService.createAngleRandomly(random.nextInt(6));
@@ -101,17 +101,17 @@ public class MatchServiceImpl implements MatchService {
 		String[][] bClass = spaceshipService.createBClassRandomly(random.nextInt(4));
 		String[][] sClass = spaceshipService.createSClassRandomly(random.nextInt(4));
 		
-		findAvailablePlaceAndPutSpaceAtTheBoard(match, winger, board);
-		findAvailablePlaceAndPutSpaceAtTheBoard(match, angle, board);
-		findAvailablePlaceAndPutSpaceAtTheBoard(match, aClass, board);
-		findAvailablePlaceAndPutSpaceAtTheBoard(match, bClass, board);
-		findAvailablePlaceAndPutSpaceAtTheBoard(match, sClass, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, player, winger, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, player, angle, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, player, aClass, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, player, bClass, board);
+		findAvailablePlaceAndPutSpaceAtTheBoard(match, player, sClass, board);
 		fillBoardWithDotsAndCreateArrayForPlayer(player, board);
 	}
 
-	private void findAvailablePlaceAndPutSpaceAtTheBoard(Match match, String[][] spaceship, String[][] board) {
+	private void findAvailablePlaceAndPutSpaceAtTheBoard(Match match, Player player, String[][] spaceship, String[][] board) {
 		int[] rowAndColumnAvailable = findAnAvailablePlaceInTheBoard(board, spaceship);
-		putSpaceshipAtTheBoard(match, board, spaceship, rowAndColumnAvailable);
+		putSpaceshipAtTheBoard(match, player, board, spaceship, rowAndColumnAvailable);
 	}
 
 	private int[] findAnAvailablePlaceInTheBoard(String[][] board, String[][] spaceship) {
@@ -164,7 +164,7 @@ public class MatchServiceImpl implements MatchService {
 		return rowAndColumn;
 	}
 	
-	private void putSpaceshipAtTheBoard(Match match, String[][] board, String[][] spaceship, int[] rowAndColumn) {
+	private void putSpaceshipAtTheBoard(Match match, Player player, String[][] board, String[][] spaceship, int[] rowAndColumn) {
 		int rowAvailable = rowAndColumn[0];
 		int columnAvailable = rowAndColumn[1];
 		int countSpaceshipRow = 0;
@@ -189,10 +189,10 @@ public class MatchServiceImpl implements MatchService {
 				countSpaceshipRow++;
 			} 
 		} else {
-			positionInTheBoard[0] = rowAvailable;
-			positionInTheBoard[1] = columnAvailable;
-			positionInTheBoard[2] = rowAvailable - spaceship.length + 1 ;
-			positionInTheBoard[3] = columnAvailable - spaceship[0].length + 1 ;
+			positionInTheBoard[0] = rowAvailable - spaceship.length + 1 ;;
+			positionInTheBoard[1] = columnAvailable - spaceship[0].length + 1 ;;
+			positionInTheBoard[2] = rowAvailable;
+			positionInTheBoard[3] = columnAvailable;
 			
 			countSpaceshipRow = spaceship.length-1;
 			countSpaceshipColumn = spaceship[0].length-1;
@@ -206,7 +206,7 @@ public class MatchServiceImpl implements MatchService {
 			}
 		}
 		
-		match.getListOfPositionsInTheBoard().add(positionInTheBoard);
+		player.getListOfPositionsInTheBoard().add(positionInTheBoard);
 	}
 	
 	private Game createPlayerTurnForStartTheMatch(Match match) {
@@ -274,27 +274,5 @@ public class MatchServiceImpl implements MatchService {
 	
 	public Match getMatchBy(String gameId) {
 		return matchList.stream().filter(m -> m.getGameId().equals(gameId)).findFirst().orElse(null);
-	}
-	
-	private void printboard(String[][] board) {
-		System.out.println();
-		for (int row = 0; row < 16; row++) {
-			System.out.println();
-			for (int column = 0; column < 16; column++) {
-				System.out.print(board[row][column] == null ? "_" : board[row][column]);
-			}
-		}
-		System.out.println();
-	}
-
-	private void printspaceship(String[][] spaceship) {
-		System.out.println();
-		for (int row = 0; row < spaceship.length; row++) {
-			System.out.println();
-			for (int column = 0; column < spaceship[row].length; column++) {
-				System.out.print(spaceship[row][column]);
-			}
-		}
-		System.out.println();	
 	}
 }

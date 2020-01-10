@@ -1,5 +1,7 @@
 package com.xlspaceship.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,6 +14,8 @@ public class Player {
 	private String[] board = new String[16];
 	
 	private String[][] boardForSalvo = new String[16][16];
+	
+	private List<int[]> listOfPositionsInTheBoard;
 	
 	public String getUserId() {
 		return userId;
@@ -36,4 +40,14 @@ public class Player {
 	public void setBoardForSalvo(String[][] boardForSalvo) {
 		this.boardForSalvo = boardForSalvo;
 	}
+
+	public List<int[]> getListOfPositionsInTheBoard() {
+		return listOfPositionsInTheBoard;
+	}
+
+	public void setListOfPositionsInTheBoard(List<int[]> listOfPositionsInTheBoard) {
+		this.listOfPositionsInTheBoard = listOfPositionsInTheBoard;
+	}
+	
+	
 }
