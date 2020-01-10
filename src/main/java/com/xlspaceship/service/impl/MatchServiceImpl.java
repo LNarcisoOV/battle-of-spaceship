@@ -18,6 +18,12 @@ import com.xlspaceship.service.SpaceshipService;
 @Service
 public class MatchServiceImpl implements MatchService {
 	
+	private static final int MAX_SHAPES_OF_WINGER = 2;
+	private static final int MAX_SHAPES_OF_ANGLE = 6;
+	private static final int MAX_SHAPES_OF_ACLASS = 4;
+	private static final int MAX_SHAPES_OF_BCLASS = 4;
+	private static final int MAX_SHAPES_OF_SCLASS = 4;
+	
 	@Autowired
 	private SpaceshipService spaceshipService;
 
@@ -95,11 +101,11 @@ public class MatchServiceImpl implements MatchService {
 		String[][] board = new String[16][16];
 		player.setListOfPositionsInTheBoard(new ArrayList<>());
 		
-		String[][] winger = spaceshipService.createWingerRandomly(random.nextInt(2));
-		String[][] angle = spaceshipService.createAngleRandomly(random.nextInt(6));
-		String[][] aClass = spaceshipService.createAClassRandomly(random.nextInt(4));
-		String[][] bClass = spaceshipService.createBClassRandomly(random.nextInt(4));
-		String[][] sClass = spaceshipService.createSClassRandomly(random.nextInt(4));
+		String[][] winger = spaceshipService.createWingerRandomly(random.nextInt(MAX_SHAPES_OF_WINGER));
+		String[][] angle = spaceshipService.createAngleRandomly(random.nextInt(MAX_SHAPES_OF_ANGLE));
+		String[][] aClass = spaceshipService.createAClassRandomly(random.nextInt(MAX_SHAPES_OF_ACLASS));
+		String[][] bClass = spaceshipService.createBClassRandomly(random.nextInt(MAX_SHAPES_OF_BCLASS));
+		String[][] sClass = spaceshipService.createSClassRandomly(random.nextInt(MAX_SHAPES_OF_SCLASS));
 		
 		findAvailablePlaceAndPutSpaceAtTheBoard(match, player, winger, board);
 		findAvailablePlaceAndPutSpaceAtTheBoard(match, player, angle, board);
@@ -126,7 +132,6 @@ public class MatchServiceImpl implements MatchService {
 			
 			try {
 				if(rowRandomly < columnRandomly) {
-					// Condition to find available places from the beginning to the end.
 					outerLoop:
 					for (int row = rowRandomly; row < rowRandomly + spaceship.length; row++) {
 						for (int column = columnRandomly; column < columnRandomly + spaceship[0].length; column++) {
@@ -138,7 +143,6 @@ public class MatchServiceImpl implements MatchService {
 						}
 					}
 				} else {
-					// Condition to find available places from the end to the beginning.
 					outer:
 					for (int row = rowRandomly; row > rowRandomly - spaceship.length; row--) {
 						for (int column = columnRandomly; column > columnRandomly - spaceship[0].length; column--) {
@@ -170,8 +174,6 @@ public class MatchServiceImpl implements MatchService {
 		int countSpaceshipRow = 0;
 		int countSpaceshipColumn = 0;
 		
-//		Storing the position in the board for this spaceship
-//		to check if the spaceship was killed ahead
 		int[] positionInTheBoard = new int[4];
 		
 		if(rowAvailable < columnAvailable) {
