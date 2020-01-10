@@ -145,22 +145,22 @@ public class SalvoServiceImpl implements SalvoService {
 		if (matchRequest.getSalvo() != null || matchRequest.getSalvo().length > 0) {
 			for (int i = 0; i < matchRequest.getSalvo().length; i++) {
 				salvo[i] = matchRequest.getSalvo()[i];
-				if (salvo[i].contains("A")) {
+				if (salvo[i].toUpperCase().contains("A")) {
 					salvo[i] = salvo[i].replace("A", "10");
 				}
-				if (salvo[i].contains("B")) {
+				if (salvo[i].toUpperCase().contains("B")) {
 					salvo[i] = salvo[i].replace("B", "11");
 				}
-				if (salvo[i].contains("C")) {
+				if (salvo[i].toUpperCase().contains("C")) {
 					salvo[i] = salvo[i].replace("C", "12");
 				}
-				if (salvo[i].contains("D")) {
+				if (salvo[i].toUpperCase().contains("D")) {
 					salvo[i] = salvo[i].replace("D", "13");
 				}
-				if (salvo[i].contains("E")) {
+				if (salvo[i].toUpperCase().contains("E")) {
 					salvo[i] = salvo[i].replace("E", "14");
 				}
-				if (salvo[i].contains("F")) {
+				if (salvo[i].toUpperCase().contains("F")) {
 					salvo[i] = salvo[i].replace("F", "15");
 				}
 			}
